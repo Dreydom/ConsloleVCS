@@ -1,0 +1,27 @@
+﻿using System;
+
+namespace ConsloleVCS
+{
+    class FileVersion
+    {
+        public string Name { get; set; }
+        public string Size { get; set; }
+        public string Created { get; set; }
+        public string Modified { get; set; }
+        public string Label { get; set; }
+        public string Color { get; set; }
+        public override string ToString()
+        {
+            return String.Format(
+@"file: {0} {1}
+    size: {2}
+    created: {3}
+    modified: {4}
+", Name, Label, Size, Created, Modified);
+        }
+        public void Log()
+        {
+            Console.WriteLine(ToString());
+        }
+    }
+}
