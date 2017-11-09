@@ -7,28 +7,31 @@ namespace ConsloleVCS
 {
     class VCS
     {
-        public List<DirectoryVersion> DirectoryList = new List<DirectoryVersion>();
-        public DirectoryVersion ActiveDirectory { get; set; }
-            /*{
-                if (Directory.Exists(value))
-                {
-                    activeDirectory = value;
-                    foreach (DirectoryVersion directory in DirectoryList)
-                    {
-                        directory.IsActive = false;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Ошибка: Не существует указанного пути.");
-                    return;
-                }
-            }*/
-        
+        public static List<DirectoryVersion> DirectoryList = new List<DirectoryVersion>();
+        public static DirectoryVersion ActiveDirectory { get; set; }
         private bool HasMethod(string methodName)
         {
             var type = this.GetType();
             return type.GetMethod(methodName) != null;
+        }
+        public void Init(string parameter)
+        {
+            if (Directory.Exists(parameter))
+            {
+                ActiveDirectory = new DirectoryVersion() {Path = parameter};
+                ActiveDirectory.Init();
+                DirectoryList.Add(ActiveDirectory);
+                Console.WriteLine("Путь инициализирован. Папка добавлена в ветор");
+            }
+            else
+            {
+                Console.WriteLine("Ошибка: Указанного пути не существует.");
+            }
+
+        }
+        public void Status()
+        {
+            ActiveDirectory.Log();
         }
         public void Hello(string parameter)
         {
@@ -38,16 +41,14 @@ namespace ConsloleVCS
         {
             Console.WriteLine("AYYY LMAO");
         }
-
-        public void Init(string parameter)
+        public void Exit()
         {
-            ActiveDirectory = new DirectoryVersion() { Path = parameter, IsActive = true };
-            DirectoryList.Add(ActiveDirectory);
-            Console.WriteLine("Путь инициализирован. Папка добавлена в ветор");
-
+            Environment.Exit(1);
         }
+
         public void ReadCommand(string command, string parameter = "")
         {
+            if (String.IsNullOrEmpty(command)) return;
             if (!this.HasMethod(command))
             {
                 Console.WriteLine("Ошибка: Нет команды с именем \"{0}\".", command);

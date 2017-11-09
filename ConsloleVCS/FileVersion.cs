@@ -5,11 +5,36 @@ namespace ConsloleVCS
     class FileVersion
     {
         public string Name { get; set; }
-        public string Size { get; set; }
+        private string size;
+        public string Size
+        {
+            get { return size; }
+            set
+            {
+                double temp = Convert.ToDouble(value);
+                if (temp > 1073741824)
+                {
+                    temp /= 1073741824;
+                    size = temp.ToString("0.##") + " Gb";
+                }
+                else if (temp > 1048576)
+                {
+                    temp /= 1048576;
+                    size = temp.ToString("0.##") + " Gb";
+                }
+                else if (temp > 1024)
+                {
+                    temp /= 1024;
+                    size = temp.ToString("0.##") + " Gb";
+                }
+                else
+                    size = value + " b";
+            }
+        }
         public string Created { get; set; }
         public string Modified { get; set; }
         public string Label { get; set; }
-        public string Color { get; set; }
+        public ConsoleColor Color { get; set; }
         public override string ToString()
         {
             return String.Format(
@@ -21,7 +46,9 @@ namespace ConsloleVCS
         }
         public void Log()
         {
+            Console.ForegroundColor = Color;
             Console.WriteLine(ToString());
+            Console.ResetColor();
         }
     }
 }
