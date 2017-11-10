@@ -6,6 +6,12 @@ namespace ConsloleVCS
     class DirectoryVersion
     {
         public string Path { get; set; }
+        public int Number { get; set; }
+        public string Name()
+        {
+            DirectoryInfo dir = new DirectoryInfo(Path);
+            return dir.Name;
+        }
         public static List<FileVersion> FileList = new List<FileVersion>();
         public void Init()
         {
@@ -20,7 +26,7 @@ namespace ConsloleVCS
                     Created = file.CreationTime.ToString("dd/MM/yyyy"),
                     Modified = file.LastWriteTime.ToString("dd/MM/yyyy"),
                     Label = "",
-                    Color = System.ConsoleColor.White
+                    Color = System.ConsoleColor.Green
                 });
             }
         }

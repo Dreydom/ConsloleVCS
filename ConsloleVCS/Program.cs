@@ -6,7 +6,7 @@ namespace ConsloleVCS
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Добро пожаловать в систему контроля версий v0.1!");
+            Console.WriteLine("Добро пожаловать в систему контроля версий v0.2!");
             Console.WriteLine("Используйте команду Help чтобы увидеть список доступных команд или команду Exit для выхода из приложения.");
             do
             {

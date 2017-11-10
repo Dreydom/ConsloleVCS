@@ -18,6 +18,15 @@ namespace ConsloleVCS
         {
             if (Directory.Exists(parameter))
             {
+                foreach (DirectoryVersion dir in DirectoryList)
+                {
+                    if (parameter == dir.Path)
+                    {
+                        ActiveDirectory = dir;
+                        Console.WriteLine("Путь инициализирован.");
+                        return;
+                    }
+                }
                 ActiveDirectory = new DirectoryVersion() {Path = parameter};
                 ActiveDirectory.Init();
                 DirectoryList.Add(ActiveDirectory);
@@ -31,15 +40,28 @@ namespace ConsloleVCS
         }
         public void Status()
         {
+            Console.WriteLine("Отслеживаемая папка: {0}", ActiveDirectory.Path);
             ActiveDirectory.Log();
         }
-        public void Hello(string parameter)
+        public void Listbranch()
         {
-            Console.WriteLine("Привет! Параметр, который вы ввели — {0}", parameter);
+            Console.WriteLine("Список отслеживаемых папок:");
+            foreach (DirectoryVersion dir in DirectoryList)
+            {
+                Console.WriteLine(dir.Name());
+            }
         }
-        public void Lmao()
+        public void Help()
         {
-            Console.WriteLine("AYYY LMAO");
+            Console.WriteLine("Список команд:");
+            Console.WriteLine("Init [dir_path] — инициализация СКВ для папки, путь к которой указан в dir_path.");
+            Console.WriteLine("Status — отображение статуса отслеживаемых файлов последней проинициализированной папки.");
+            Console.WriteLine("Add [file_path] — добавить файл под версионный контроль.");
+            Console.WriteLine("Remove [file_path] – удалить файл из-под версионного контроля.");
+            Console.WriteLine("Apply [dir_path] – сохранить все изменения в отслеживаемой папке (удалить все метки к файлам и сохранить изменения в них).");
+            Console.WriteLine("Listbranch -  показать все отслеживаемые папки.");
+            Console.WriteLine("Checkout [dir_path] OR [dir_number] – перейти к указанной отслеживаемой директории");
+
         }
         public void Exit()
         {
