@@ -6,14 +6,16 @@ namespace ConsloleVCS
     class DirectoryVersion
     {
         public string Path { get; set; }
-        public int Number { get; set; }
-        public string Name()
+        public string Name
         {
-            DirectoryInfo dir = new DirectoryInfo(Path);
-            return dir.Name;
+            get
+            {
+                DirectoryInfo dir = new DirectoryInfo(Path);
+                return dir.Name;
+            }
         }
-        public static List<FileVersion> FileList = new List<FileVersion>();
-        public void Init()
+        public List<FileVersion> FileList = new List<FileVersion>();
+        public void Init()  
         {
             DirectoryInfo dir = new DirectoryInfo(Path);
             FileInfo[]files = dir.GetFiles();
@@ -22,20 +24,16 @@ namespace ConsloleVCS
                 FileList.Add(new FileVersion()
                 {
                     Name = file.Name,
-                    Size = file.Length.ToString(),
+                    Size = file.Length,
                     Created = file.CreationTime.ToString("dd/MM/yyyy"),
                     Modified = file.LastWriteTime.ToString("dd/MM/yyyy"),
-                    Label = "",
-                    Color = System.ConsoleColor.Green
+                    Label = ""
                 });
             }
         }
-        public void Log()
+        public List<FileVersion> GetFiles()
         {
-            foreach (FileVersion file in FileList)
-            {
-                file.Log();
-            }
+            return FileList;
         }
     }
 }
