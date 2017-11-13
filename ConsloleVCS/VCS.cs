@@ -248,6 +248,11 @@ namespace ConsloleVCS
             else
             {
                 int inddir = DirectoryList.FindIndex(item => item.Path == parameter); //getting the index. Told you that indexes are cool.
+                if (inddir == -1)
+                {
+                    Console.WriteLine("Ошибка: Данная папка не инициализирована."); //the folder is not in DirectoryList
+                    return;
+                }
                 ActiveDirectory = DirectoryList[inddir];
                 Console.WriteLine("Отслеживаемая папка: {0}", ActiveDirectory.Path); //the folder we work in rn
                 return;
