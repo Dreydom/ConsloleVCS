@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ConsloleVCS
 {
@@ -15,20 +16,21 @@ namespace ConsloleVCS
             }
         }
         public List<FileVersion> FileList = new List<FileVersion>(); //every directory has a list of files...
-        public void Init() //...getting them here
+        public void Init(params string[] parameters) //...getting them here
         {
             DirectoryInfo dir = new DirectoryInfo(Path);
             FileInfo[]files = dir.GetFiles();
             foreach(FileInfo file in files)
             {
-                FileList.Add(new FileVersion()
-                {
-                    Name = file.Name,
-                    Size = file.Length,
-                    Created = file.CreationTime.ToString("dd/MM/yyyy"), //some sexy formatting
-                    Modified = file.LastWriteTime.ToString("dd/MM/yyyy"), //screw US and some other countries for using MM/dd instead
-                    Label = "" //it's needed for new and removed labels only. None could be in a new folder
-                });
+                if (!parameters.Contains(file.Name))
+                    FileList.Add(new FileVersion()
+                    {
+                        Name = file.Name,
+                        Size = file.Length,
+                        Created = file.CreationTime.ToString(), //some sexy formatting
+                        Modified = file.LastWriteTime.ToString(), //screw US and some other countries for using MM/dd instead
+                        Label = "" //it's needed for new and removed labels only. None could be in a new folder
+                    });
             }
         }
     }

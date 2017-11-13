@@ -75,8 +75,8 @@ namespace ConsloleVCS
                     FileInfo nf = newfiles[indnew];
                     file.Name = nf.Name;
                     file.Size = nf.Length;
-                    file.Created = nf.CreationTime.ToString("dd/MM/yyyy");
-                    file.Modified = nf.LastWriteTime.ToString("dd/MM/yyyy");
+                    file.Created = nf.CreationTime.ToString();
+                    file.Modified = nf.LastWriteTime.ToString();
                     file.Log(ConsoleColor.Green, file.ToString("<-- new", -1, "", "")); //unfortunately FileVersion doesn't have Log() method
                     continue;
                 }
@@ -104,17 +104,17 @@ namespace ConsloleVCS
                     {
                         if (of.Size != nf.Length) //if size has changed. You won't see how much if the size is more than 1KB and the change is only a few bytes.
                         {
-                            lsize = of.Size;
+                            lsize = nf.Length;
                             color = ConsoleColor.Red;
                         }
-                        if (of.Created != nf.CreationTime.ToString("dd/MM/yyyy")) //if creation time has changed. How??? NOT MY PROBLEM.
+                        if (of.Created != nf.CreationTime.ToString()) //if creation time has changed. How??? NOT MY PROBLEM.
                         {
-                            lcreated = "<--" + of.Created; //you might ask, where is the arrow for Size? Well, it's double. Watch FileVersion if you want to know how I could overcome that.
+                            lcreated = "<--" + nf.CreationTime.ToString(); //you might ask, where is the arrow for Size? Well, it's double. Watch FileVersion if you want to know how I could overcome that.
                             color = ConsoleColor.Red;
                         }
-                        if (of.Modified !=nf.LastWriteTime.ToString("dd/MM/yyyy")) //If the file was modified
+                        if (of.Modified !=nf.LastWriteTime.ToString()) //If the file was modified
                         {
-                            lmodified = "<--" + of.Modified;
+                            lmodified = "<--" + nf.LastWriteTime.ToString();
                             color = ConsoleColor.Red;
                         }
                         of.Log(color, of.ToString(of.Label, lsize, lcreated, lmodified)); //adding "continue" below would slow it down, I suppose.
@@ -149,8 +149,8 @@ namespace ConsloleVCS
                         else //but if it was removed earlier, we change it to 'added' and refresh the fields
                         {
                             checkfile.Size = file.Length;
-                            checkfile.Created = file.CreationTime.ToString("dd/MM/yyyy");
-                            checkfile.Modified = file.LastWriteTime.ToString("dd/MM/yyyy");
+                            checkfile.Created = file.CreationTime.ToString();
+                            checkfile.Modified = file.LastWriteTime.ToString();
                             checkfile.Label = "<-- added";
                             Console.WriteLine("Файл добавлен обратно в версионный контроль."); //"file was added back under control"
                             return;
@@ -161,8 +161,8 @@ namespace ConsloleVCS
                 {
                     Name = file.Name,
                     Size = file.Length,
-                    Created = file.CreationTime.ToString("dd/MM/yyyy"),
-                    Modified = file.LastWriteTime.ToString("dd/MM/yyyy"),
+                    Created = file.CreationTime.ToString(),
+                    Modified = file.LastWriteTime.ToString(),
                     Label = "<-- added"
                 });
                 Console.WriteLine("Новый файл добавлен в версионный контроль."); //A new file was added under control
@@ -202,22 +202,25 @@ namespace ConsloleVCS
             }
             else Console.WriteLine("Ошибка: Файл не найден."); //file wasn't found. As you see, the whole function is an copy of Add() method
         }
-        public void Apply(string parameter) //needed to refresh the data in my directory list
+        public void Apply()
         {
-            if (!Directory.Exists(parameter))
+            if (ActiveDirectory == null)
             {
-                Console.WriteLine("Ошибка: Указанный путь не существует."); //error. the path doesn't exist
+                Console.WriteLine("Ошибка: Отслеживаемая папка не выбрана. Используйте команды Init или Checkout для выбора активной папки."); //same error line
                 return;
             }
-            else
+            List<string> removed = new List<string>();
+            foreach (FileVersion file in ActiveDirectory.FileList)
             {
-                int inddir = DirectoryList.FindIndex(item => item.Path == parameter); //searching for an element with the path I need
-                DirectoryList[inddir].FileList.Clear(); //clear it all
-                DirectoryList[inddir].Init(); //thank goodness I made this function ;D
-                Console.WriteLine("Сохранены все изменения в папке: {0}", DirectoryList[inddir].Path); //"all changes were saved in the folder: ..."
-                return;
+                if (file.Label == "<-- removed")
+                {
+                    removed.Add(file.Name);
+                }
             }
-
+            ActiveDirectory.FileList.Clear();
+            ActiveDirectory.Init(removed.ToArray());
+            Console.WriteLine("Сохранены все изменения в папке: {0}", ActiveDirectory.Path);
+            return;
         }
         public void Listbranch() //my favorite function
         {
@@ -289,7 +292,7 @@ namespace ConsloleVCS
                 MethodInfo method = this.GetType().GetMethod(command); //getting the method we want to run
                 try
                 {
-                    if (parameter == "") //no parameters
+                    if (String.IsNullOrEmpty(parameter)) //no parameters
                         method.Invoke(this, null);
                     else //one parameter
                         method.Invoke(this, new[] { parameter });
